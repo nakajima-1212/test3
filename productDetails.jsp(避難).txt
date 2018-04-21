@@ -1,0 +1,250 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib prefix="s" uri="/struts-tags"%>
+<!-- 戌亥 -->
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<link rel="stylesheet" href="./css/fifties.css">
+<link rel="stylesheet" href="./css/productDetails.css">
+<title>商品詳細画面</title>
+</head>
+<body>
+	<jsp:include page="includeHeader.jsp" />
+
+	<div class="main">
+		<div id="title">
+			<h1>PRODUCT</h1>
+			<p class="title">商品詳細</p>
+		</div>
+		<div class="container1">
+			<s:form action="CartInsertAction">
+
+				<img class="img1" src="<s:property value='image_file_path'/>">
+
+				<div class="con1">
+					<p class="name">
+						<s:property value="product_name" />
+					</p>
+
+					<p class="kana">
+						<s:property value="product_name_kana" />
+					</p>
+
+					<p class="price">
+						<s:property value="price" />
+						円
+					</p>
+
+					<p class="date">
+						<s:property value="release_date" />
+					</p>
+
+					<p class="company">
+						<s:property value="release_company" />
+					</p>
+
+					<p class="stock">
+						在庫：
+						<s:property value="product_stock" />
+						個
+					</p>
+					<s:if test="product_stock > 0 && product_stock < 6 ">
+			購入個数
+			<s:select name="productCount" list="stockList" />
+						<s:hidden name="productId" value="%{product_id}" />
+						<s:hidden name="price" value="%{price}" />
+						<s:submit value=" カートに入れる" />
+					</s:if>
+					<s:elseif test="product_stock >= 6">
+						<select name="productCount">
+							<s:iterator value="stockList" status="st" begin="1" end="5">
+								<option value="<s:property value="#st.count"/>"><s:property
+										value="#st.count" /></option>
+							</s:iterator>
+						</select>
+						<s:hidden name="productId" value="%{product_id}" />
+						<s:hidden name="price" value="%{price}" />
+						<s:submit value=" カートに入れる" />
+					</s:elseif>
+					<s:else>
+						<p>在庫がありません。</p>
+					</s:else>
+				</div>
+			</s:form>
+			<s:if test="%{session.loginFlg == true}">
+				<s:form action="CreateFavoriteAction">
+					<s:hidden name="productId" value="%{product_id}" />
+					<s:hidden name="product_id" value="%{product_id}" />
+					<s:hidden name="image_file_path" value="%{image_file_path}" />
+					<s:hidden name="product_name" value="%{product_name}" />
+					<s:hidden name="product_name_kana" value="%{product_name_kana}" />
+					<s:hidden name="product_description" value="%{product_description}" />
+					<s:hidden name="product_stock" value="%{product_stock}" />
+					<s:hidden name="price" value="%{price}" />
+					<s:hidden name="category_id" value="%{category_id}" />
+					<s:hidden name="release_company" value="%{release_company}" />
+					<s:hidden name="release_date" value="%{release_date}" />
+					<p class="favorite">
+						<s:submit value="お気に入りに入れる" />
+						<s:property value="%{errorMessage}" />
+					</p>
+				</s:form>
+			</s:if>
+			<div class="con2">
+				<p>
+					<s:property value="product_description" />
+				</p>
+			</div>
+
+			<s:if test="reviewList == null">
+				<p>商品レビューはありません</p>
+			</s:if>
+			<s:elseif test="reviewList.size() >0 && reviewList.size <3 ">
+				<div class="con3">
+					<s:iterator value="reviewList" status="st">
+						<div class="reviewbox">
+
+							<span class="rtitle">＜<s:property value="reviewTitle" />＞
+							</span>
+
+							<s:if test="reviewScore == 1">
+								<span class="star">★</span>
+							</s:if>
+							<s:if test="reviewScore == 2">
+								<span class="star">★★</span>
+							</s:if>
+
+							<s:if test="reviewScore == 3">
+								<span class="star">★★★</span>
+							</s:if>
+
+							<s:if test="reviewScore == 4">
+								<span class="star">★★★★</span>
+							</s:if>
+
+							<s:if test="reviewScore == 5">
+								<span class="star">★★★★★</span>
+							</s:if>
+
+
+							<p class="rbody">
+								<s:property value="reviewBody" />
+							</p>
+						</div>
+					</s:iterator>
+					<div class="link">
+						<a
+							href='<s:url action="ReviewListAction">
+				<s:param name="productId" value="%{product_id}"/>
+				<s:param name="imageFilePath" value="%{image_file_path}"/>
+				<s:param name="productName" value="%{product_name}"/>
+				<s:param name="productNameKana" value="%{product_name_kana}"/>
+				<s:param name="productDescription" value="%{product_description}"/>
+				<s:param name="productStock" value="%{product_stock}"/>
+				<s:param name="price" value="%{price}"/>
+				<s:param name="categoryId" value="%{category_id}"/>
+				<s:param name="releaseCompany" value="%{release_company}"/>
+				<s:param name="releaseDate" value="%{release_date}"/>
+						</s:url>'>レビュー一覧</a>
+					</div>
+				</div>
+			</s:elseif>
+
+			<s:else>
+				<div class="con3">
+					<s:iterator value="reviewList" status="st" begin="0" end="2">
+						<div class="reviewbox">
+
+							<span class="rtitle">＜<s:property value="reviewTitle" />＞
+							</span>
+
+							<s:if test="reviewScore == 1">
+								<span class="star">★</span>
+							</s:if>
+							<s:if test="reviewScore == 2">
+								<span class="star">★★</span>
+							</s:if>
+
+							<s:if test="reviewScore == 3">
+								<span class="star">★★★</span>
+							</s:if>
+
+							<s:if test="reviewScore == 4">
+								<span class="star">★★★★</span>
+							</s:if>
+
+							<s:if test="reviewScore == 5">
+								<span class="star">★★★★★</span>
+							</s:if>
+
+
+
+							<p class="rbody">
+								<s:property value="reviewBody" />
+							</p>
+						</div>
+					</s:iterator>
+					<div class="link">
+						<a
+							href='<s:url action="ReviewListAction">
+				<s:param name="productId" value="%{product_id}"/>
+				<s:param name="imageFilePath" value="%{image_file_path}"/>
+				<s:param name="productName" value="%{product_name}"/>
+				<s:param name="productNameKana" value="%{product_name_kana}"/>
+				<s:param name="productDescription" value="%{product_description}"/>
+				<s:param name="productStock" value="%{product_stock}"/>
+				<s:param name="price" value="%{price}"/>
+				<s:param name="categoryId" value="%{category_id}"/>
+				<s:param name="releaseCompany" value="%{release_company}"/>
+				<s:param name="releaseDate" value="%{release_date}"/>
+				</s:url>'><span
+							class="review">レビュー一覧</span></a>
+					</div>
+				</div>
+			</s:else>
+		</div>
+		<h3>おすすめ商品</h3>
+
+		<s:if test="sugestList.size()==0">
+			<p>関連商品はありません
+			<p>
+		</s:if>
+		<s:iterator value="sugestList">
+			<div class="productbox">
+				<a
+					href="<s:url action="ProductDetailsAction">
+				<s:param name="product_id" value="%{product_id}"/>
+				<s:param name="image_file_path" value="%{image_file_path}"/>
+				<s:param name="product_name" value="%{product_name}"/>
+				<s:param name="product_name_kana" value="%{product_name_kana}"/>
+				<s:param name="product_description" value="%{product_description}"/>
+				<s:param name="product_stock" value="%{product_stock}"/>
+				<s:param name="price" value="%{price}"/>
+				<s:param name="category_id" value="%{category_id}"/>
+				<s:param name="release_company" value="%{release_company}"/>
+				<s:param name="release_date" value="%{release_date}"/>
+				</s:url>">
+					<img src="<s:property value= 'image_file_path'/>">
+					<div class="link">
+						<s:property value="product_name" />
+						<br>
+						<s:property value="product_name_kana" />
+
+						<br>
+
+						<s:property value="price" />
+						円 <br> 在庫：
+						<s:property value="product_stock" />
+						個
+					</div>
+				</a>
+			</div>
+		</s:iterator>
+	</div>
+
+	<jsp:include page="includeFooter.jsp" />
+</body>
+</html>
